@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RustChain Dashboard</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:monospace;background:#111;color:#eee;padding:20px}
+h1{color:#f9e2af;margin-bottom:20px;font-size:1.5em}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:20px}
+.card{background:#181818;border:1px solid #444;padding:16px;border-radius:8px}
+.card h2{color:#89dceb;font-size:0.9em;margin-bottom:8px;text-transform:uppercase}
+.card .value{font-size:2em;color:#f9e2af}
+.card .label{color:#888;font-size:0.8em;margin-top:4px}
+.refresh{color:#666;font-size:0.8em}
+.status-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+.ok{background:#a6e3a1}.warn{background:#f9e2af}.err{background:#f38ba8}
+@media(max-width:600px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<h1>🌾 RustChain Dashboard</h1>
+<div class="grid">
+<div class="card"><h2>Node Status</h2><div class="value" id="status">...</div><div class="label">v<span id="version">-</span></div></div>
+<div class="card"><h2>Epoch</h2><div class="value" id="epoch">-</div><div class="label">Slot <span id="slot">-</span></div></div>
+<div class="card"><h2>Enrolled Miners</h2><div class="value" id="miners">-</div><div class="label">of 589 total</div></div>
+<div class="card"><h2>Epoch Pot</h2><div class="value" id="pot">-</div><div class="label">RTC</div></div>
+<div class="card"><h2>Total Supply</h2><div class="value" id="supply">-</div><div class="label">RTC</div></div>
+<div class="card"><h2>Uptime</h2><div class="value" id="uptime">-</div><div class="label">hours</div></div>
+</div>
+<p class="refresh">Auto-refresh: 30s | Last: <span id="ts">-</span></p>
+<script>
+const NODE='https://rustchain.org';
+async function refresh(){
+  try{
+    const h=await fetch(NODE+'/health').then(r=>r.json());
+    const e=await fetch(NODE+'/epoch').then(r=>r.json());
+    const s=await fetch(NODE+'/api/stats').then(r=>r.json());
+    document.getElementById('status').innerHTML='<span class="status-dot '+(h.ok?'ok':'err')+'"></span>'+(h.ok?'Online':'Offline');
+    document.getElementById('version').textContent=h.version||'-';
+    document.getElementById('epoch').textContent=e.epoch||'-';
+    document.getElementById('slot').textContent=e.slot||'-';
+    document.getElementById('miners').textContent=e.enrolled_miners||'-';
+    document.getElementById('pot').textContent=e.epoch_pot||'-';
+    document.getElementById('supply').textContent=(e.total_supply_rtc||0).toLocaleString();
+    document.getElementById('uptime').textContent=((h.uptime_s||0)/3600).toFixed(1);
+    document.getElementById('ts').textContent=new Date().toLocaleTimeString();
+  }catch(err){document.getElementById('status').innerHTML='<span class="status-dot err"></span>Error'}
+}
+refresh();setInterval(refresh,30000);
+</script>
+</body>
+</html>
