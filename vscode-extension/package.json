@@ -1,0 +1,65 @@
+{
+  "name": "rustchain-dashboard",
+  "displayName": "RustChain Dashboard",
+  "description": "VS Code extension for RustChain wallet balance and miner status",
+  "version": "1.0.0",
+  "publisher": "xiaomili",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": ["Other"],
+  "activationEvents": ["onStartupFinished"],
+  "main": "./out/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "rustchain",
+          "title": "RustChain",
+          "icon": "media/icon.png"
+        }
+      ]
+    },
+    "views": {
+      "rustchain": [
+        {
+          "id": "rustchain.wallet",
+          "name": "Wallet"
+        },
+        {
+          "id": "rustchain.miner",
+          "name": "Miner"
+        },
+        {
+          "id": "rustchain.bounties",
+          "name": "Bounties"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "RustChain",
+      "properties": {
+        "rustchain.walletName": {
+          "type": "string",
+          "default": "",
+          "description": "Your RustChain wallet/miner name"
+        },
+        "rustchain.nodeUrl": {
+          "type": "string",
+          "default": "https://rustchain.org",
+          "description": "RustChain node URL"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/node": "20.x",
+    "typescript": "^5.3.3"
+  }
+}
